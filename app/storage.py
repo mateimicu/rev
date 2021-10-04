@@ -50,7 +50,7 @@ class RedisStorage(Storage):
 
 
 class FakeRedisStorage(RedisStorage):
-    """Implementation of the Redis Storage."""
+    """Implementation of a fake Redis Storage."""
 
     def __init__(self, host, port=6379, db=0, server=None):
         super().__init__(host, port, db)

@@ -10,6 +10,7 @@ import message
 
 
 def configure(binder):
+    """Configure dependency injections"""
     binder.bind(
         storage.Storage,
         # NOTE(mmicu): here we should probably implement a config module to

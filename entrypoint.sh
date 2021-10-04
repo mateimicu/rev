@@ -1,5 +1,5 @@
 #!/bin/bash
-export FLASK_APP=app:name
+export FLASK_APP='app:create_app()'
 
 case "$1" in
     run)

@@ -77,28 +77,24 @@ def bad_username(good_username):
 
 
 def test_wrong_username_put(client_and_server, bad_username, yesterday):
-    """Test to see we"""
     client, _ = client_and_server
     response = client.put("/hello/" + bad_username, data={"dateOfBirth": yesterday})
     assert response.status_code == 404, response.data
 
 
 def test_date_in_past(client_and_server, good_username, yesterday):
-    """Start with a blank database."""
     client, _ = client_and_server
     response = client.put("/hello/" + good_username, data={"dateOfBirth": yesterday})
     assert response.status_code == 204, response.data
 
 
 def test_date_in_the_future(client_and_server, good_username, tomorrow):
-    """Start with a blank database."""
     client, _ = client_and_server
     response = client.put("/hello/" + good_username, data={"dateOfBirth": tomorrow})
     assert response.status_code == 422, response.data
 
 
 def test_tomorrows_birthday(client_and_server, good_username, tomorrow_date):
-    """Start with a blank database."""
     client, server = client_and_server
     faker = fakeredis.FakeRedis(server=server)
 
@@ -119,7 +115,6 @@ def test_tomorrows_birthday(client_and_server, good_username, tomorrow_date):
 
 
 def test_today_birthday(client_and_server, good_username, today_date):
-    """Start with a blank database."""
     client, server = client_and_server
     faker = fakeredis.FakeRedis(server=server)
 
@@ -138,7 +133,6 @@ def test_today_birthday(client_and_server, good_username, today_date):
 
 
 def test_yesterday_birthday(client_and_server, good_username, yesterday_date):
-    """Start with a blank database."""
     client, server = client_and_server
     faker = fakeredis.FakeRedis(server=server)
 
