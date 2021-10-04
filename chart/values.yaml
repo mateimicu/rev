@@ -1,0 +1,40 @@
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "0.1"
+  limits:
+    memory: "512Mi"
+    cpu: "1"
+
+replicaCount: 1
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  cpuAverageUtilization: 50
+
+deployment:
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 25%
+
+containerProbes:
+  readiness:
+    path: /health
+  liveness:
+    path: /health
+
+podDisruptionBudget:
+  maxUnavailable: 1
+
+# The HTTP port the application listens on (and the service listens on).
+httpPort: 5000
+
+image:
+  repository: ""
+  tag: ""
+
+redis:
+  architecture: standalone
+  auth:
+    enabled: false

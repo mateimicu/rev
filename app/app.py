@@ -42,11 +42,19 @@ def create_app(*, dependencies_injector=None, config=None):
     @api.validate(resp=Response(HTTP_200=Message), tags=["api"])
     def hello_retrieve(username: str, storage: Storage):
         """
-        Store a user date of birth.
+        Return information about the users birthday.
         """
         message_service = MessageService()
         user = storage.get(username)
         return jsonify(message=message_service.get_message(user))
+
+    @app.route("/health", methods=["GET"])
+    @api.validate(resp=Response(HTTP_200=None), tags=["health"])
+    def health():
+        """
+        Health check endpoint.
+        """
+        return ("", 200)
 
     # Initialize Flask-Injector. This needs to be run *after* you attached all
     # views, handlers, context processors and template globals.

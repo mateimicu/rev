@@ -1,6 +1,25 @@
 # Hello World
 
+### ToDo
 
+- [x] PoC of the app
+- [x] Add test and improve architecture
+- [x] Build docker image
+- [x] Create local Makefile
+- [x] Create v1 of the helm chart
+- [x] Add redis as a dependency
+- [ ] Document the production architecture diagram and what needs to change from the local setup
+- [ ] Improve README and documentation
+- [ ] Document an alternative solution for Lamnda (at least a diagram)
+- [ ] Document a CI/CD pipeline
+- [ ] Add monitoring
+- [ ] Create a production-ready checklist
+  - [ ] Data storage
+  - [ ] Monitoring
+  - [ ] SLO's
+  - [ ] Alerting
+  - [ ] 0 downtime deployment
+  - [ ] scaling
 ##### Architecture Decision Records
 
 

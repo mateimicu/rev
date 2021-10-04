@@ -7,6 +7,7 @@ RUN apt-get update && \
 
 COPY . /rev
 WORKDIR /rev
+ENV PORT=5000
 
 # NOTE(mmicu): we should split test requirements vs app requirements
 RUN pip install -r /rev/requirements.txt

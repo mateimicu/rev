@@ -5,7 +5,7 @@ case "$1" in
     run)
         # run flask
         cd app
-        python3 -m flask run
+        python3 -m gunicorn "$FLASK_APP" -b :"$PORT"
         ;;
     test)
         pytest app/tests.py
