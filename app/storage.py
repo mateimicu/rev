@@ -3,7 +3,7 @@ import abc
 import json
 
 import redis
-import fakeredis
+import fakeredis  # type: ignore
 
 from models import User
 

@@ -4,7 +4,6 @@ Application to store and retrieve a date of birth.
 """
 from flask import Flask, request, jsonify
 from pydantic import BaseModel, Field, validator
-from spectree import SpecTree, Response
 from datetime import datetime, date
 from flask import request
 

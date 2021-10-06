@@ -18,6 +18,9 @@ $(VENV)/bin/activate: requirements.txt
 test_docker: build_docker
 				docker run $(IMAGE_NAME):$(IMAGE_TAG) test
 
+type_checking:
+				$(PYTHON) -m mypy app
+
 run_docker: build_docker
 				docker run -ti -p $(PORT):$(PORT) $(IMAGE_NAME):$(IMAGE_TAG)
 

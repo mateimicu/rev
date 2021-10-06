@@ -14,56 +14,47 @@ def yearsago(conversion_date, years):
             month=2, day=28, year=date_in_datetime.year + years
         )
 
-
-def get_age(birthday):
-    today = date.today()
-    return (
-        today.year
-        - birthday.year
-        - ((today.month, today.day) < (birthday.month, birthday.day))
-    )
-
-
 class MessageService:
     BIRTHDAY_TODAY = "Hello, {username}! Happy birthday!"
     BIRTHDAY_IN_THE_FUTURE = "Hello, {username}! Your birthday is in {n} day(s)"
 
-    @staticmethod
-    def _get_days_until_birthday(birthday):
-        today = date.today()
-        if today.month == birthday.month:
-            if today.day == birthday.day:
-                return 0
+    def __init__(self, today=None):
+        self._today = today if today else date.today()
 
-            # There is an assumption that if you are on 2/29 you will
-            # celebrate your day on 2/28
-            if (
-                birthday.day == 29
-                and today.day == 29
-                and not calendar.isleap(today.year)
-            ):
-                return 0
+    def _get_days_until_birthday(self, birthday):
+        try:
+            next_birthday = birthday.replace(year=self._today.year)
+        except ValueError:
+            # It means you were born on a leap year
+            next_birthday = birthday.replace(day=28, year=self._today.year)
 
-        next_birthday = datetime.combine(
-            yearsago(birthday, get_age(birthday) + 1), datetime.min.time()
-        )
+        # this is it already passed
+        if next_birthday < self._today:
+            next_birthday = next_birthday.replace(year=self._today.year + 1)
 
-        delta_untill_birthday = next_birthday - datetime.now()
-        days_until_birthday = delta_untill_birthday.days
-        if days_until_birthday == 0:
+
+        if next_birthday == self._today:
+            return 0
+        import pdb; pdb.set_trace()
+        return (next_birthday - self._today).days
+        # convert to a datetime
+        # next_birthday = datetime.combine(next_birthday, datetime.min.time())
+        # delta_untill_birthday = next_birthday - datetime.now()
+        # days_until_birthday = delta_untill_birthday.days
+        # if days_until_birthday == 0:
             # this means we have less then 1 day
-            return 1
-        return days_until_birthday
+            # return 1
+        # return days_until_birthday
 
-    def get_message(cls, user: User) -> str:
+    def get_message(self, user: User) -> str:
         # There is an assumption that if you are on 2/29 you will
         # celebrate your day on 2/28
-        days_until_birthday = cls._get_days_until_birthday(
+        days_until_birthday = self._get_days_until_birthday(
             user.date_of_birth.dateOfBirth
         )
 
         if days_until_birthday:
-            return cls.BIRTHDAY_IN_THE_FUTURE.format(
+            return self.BIRTHDAY_IN_THE_FUTURE.format(
                 username=user.username, n=days_until_birthday
             )
-        return cls.BIRTHDAY_TODAY.format(username=user.username)
+        return self.BIRTHDAY_TODAY.format(username=user.username)
