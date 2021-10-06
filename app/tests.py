@@ -74,7 +74,6 @@ def tomorrow(tomorrow_date):
     """Return tomorrows date as a string."""
     return str(tomorrow_date)
 
-
 @pytest.fixture
 def good_username():
     """Return a valid username."""

@@ -1,5 +1,25 @@
 # Hello World
 
+# Table of contents
+
+# Table of contents
+
+- [Hello World](#hello-world)
+- [Table of contents](#table-of-contents)
+    - [How to install](#how-to-install)
+    - [Deployment](#deployment)
+      - [0-downtime deployment](#0-downtime-deployment)
+      - [Monitoring, Alerting and SLO's](#monitoring-alerting-and-slos)
+    - [Architecture Decision Records](#architecture-decision-records)
+      - [What is the execution environment ?](#what-is-the-execution-environment-)
+      - [What storage solution should I use ?](#what-storage-solution-should-i-use-)
+      - [What web server should I use ?](#what-web-server-should-i-use-)
+      - [Local automation](#local-automation)
+      - [How to expose metrics ?](#how-to-expose-metrics-)
+      - [Demo](#demo)
+      - [Improvements](#improvements)
+      - [Other SRE concerns](#other-sre-concerns)
+      - [ToDo](#todo)
 
 ### How to install
 
@@ -19,16 +39,17 @@ make run_local
 
 Here is a full lost of make commands:
 
-| Command              | Description                                                                                                      |
-| -----------          | -----------                                                                                                      |
-| `make run_local`     | Create a virtual environment, install dependency and start the project locally                                   |
-| `make run_docker`    | Build a docker image with the project and start it                                                               |
-| `make type_checking` | Run the type checker for the project                                                                             |
-| `make test_local `   | Run the tests locally                                                                                            |
-| `make test_docker`   | Run the tests in the docker image (how they will be run in CI)                                                   |
-| `make build_docker`  | Build the docker image again (you can overwrite `IMAGE_NAME` and `IMAGE_TAG` if you want to change the defaults) |
-| `make helm_deploy`   | Will use the active KUBECONFIG context to deploy the application in the `rev-live` namespace                     |
-| `make clean`         | Will cleanup any local artifacts                                                                                 |
+| Command              | Description                                                                                  |
+| -----------          | -----------                                                                                  |
+| `make run_local`     | Create a virtual environment, install dependencies and start the project locally               |
+| `make run_docker`    | Build a docker image with the project and start it                                           |
+| `make type_checking` | Run the type checker for the project                                                         |
+| `make test_local `   | Run the tests locally                                                                        |
+| `make test_docker`   | Run the tests in the docker image (how they will be run in CI)                               |
+| `make build_docker`  | Build the docker image again (you need to overwrite `IMAGE_NAME` and `IMAGE_TAG` )           |
+| `make helm_deploy`   | Will use the active KUBECONFIG context to deploy the application in the `rev-live` namespace |
+| `make clean`         | Will cleanup any local artifacts                                                             |
+| `make faker`         | Will run a synthetic requests generator (it is also included in the deployment)              |
 
 
 ### Deployment
@@ -69,7 +90,7 @@ I think it is best to Alert on user problems (if we have an SLO defined it is ev
 
 * Latency - probably p99 or p95
 * Error rate - the api is relatively simple
-* Storage - if we don't configure any type of scaling on the storage side we have a hard limit after with we know the app will fail so we need to know if we are aproning that
+* Storage - if we don't configure any type of scaling on the storage side we have a hard limit after with we know the app will fail so we need to know if we are approaching that
 
 
 ### Architecture Decision Records
@@ -86,7 +107,7 @@ I am considering a few solution here:
 For this specific case [AWS Lambda](https://aws.amazon.com/lambda/) would make sense but there are a few specific reasons to go with [EKS](https://aws.amazon.com/eks/):
 
 1) The tasks allows for AWS or GPC and using Kubernetes as an abstraction layer for both of them should allow multi-cloud deployment
-2) With [AWS Lambda](https://aws.amazon.com/lambda/) there are limitation (execution time) and I am not sure if this is a no-go in the future
+2) With [AWS Lambda](https://aws.amazon.com/lambda/) there are limitations (execution time) and I am not sure if this is a no-go in the future
 3) With Kubernetes I have more control and ability to over-engineer the tasks (not a production requirement but using something like [Chalice](https://aws.github.io/chalice/index.html) would make the task extremely boring)
 
 
@@ -100,19 +121,19 @@ Redis looks like a good candidate:
 * I can run it locally or in a review environment
 
 The only downsized is the durability of the data.
-For AWS we have [MemoryDB](https://aws.amazon.com/memorydb/) that can guaranteed durability.
+For AWS we have [MemoryDB](https://aws.amazon.com/memorydb/) that can guarantee durability.
 
 For GCP the situation is a bit more complicated.
 [Memorystore](https://cloud.google.com/memorystore/docs/redis/redis-overview) supports only [point in time snapshots](https://cloud.google.com/memorystore/docs/redis/redis-overview#differences_between_managed_and_open_source_redis) this will expose us to always lose a wind's of time.
-So will either have to use Redis Labs as a provider for this or we host our own in GKE
+So we will either have to use Redis Labs as a provider for this or we host our own in GKE
 
 
-There is another option I was looking it but I don't have the time to implement a PoC for it:
+There is another option I was looking at but I don't have the time to implement a PoC for it:
 To use two separate products and abstract them at the code level. For example use [dynamodb](https://aws.amazon.com/dynamodb/) for AWS and [Cloud Firestore](https://firebase.google.com/docs/firestore) for GPC.
 
 #### What web server should I use ?
 
-Using the built-in development server for flask is not recommended and I went with unicorn that should be fast and secure.
+Using the built-in development server for flask is not recommended and I went with gunicorn that should be fast and secure.
 If we need complex features we can look at nginx but the most common things nginx provides can be configured at Ingress level.
 
 #### Local automation
@@ -134,7 +155,18 @@ I decided to got with Prometheus for a few reasons:
 * We can even install our own Prometheus in the cluster
 * The format is open and there are tools to export them to other systems
 
-##### ToDo
+#### Demo
+
+For the demo and to make sure it works I included in the deployment a [fake requests generator](./app/faker.py).
+
+#### Improvements
+
+#### Other SRE concerns
+
+* Log to stdout
+* Log in JSON format
+
+#### ToDo
 
 - [x] PoC of the app
 - [x] Add test and improve architecture
