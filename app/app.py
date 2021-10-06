@@ -9,6 +9,7 @@ from flask import Flask, request, jsonify, request
 from pydantic import BaseModel, validator
 from spectree import SpecTree, Response  # type: ignore
 from flask_injector import FlaskInjector
+from prometheus_flask_exporter import PrometheusMetrics
 
 
 from converters import OnlyLettersConverter
@@ -22,6 +23,22 @@ def create_app(*, dependencies_injector=None, config: dict = None) -> Flask:  # 
     app = Flask(__name__)
     app.url_map.converters["onlyletters"] = OnlyLettersConverter
     api = SpecTree("flask")
+    metrics = PrometheusMetrics(app)
+
+    metrics.register_default(
+        metrics.counter(
+            'request', 'Request count by request paths',
+             labels={'status': lambda r: r.status_code, 'path': lambda: request.path}
+        )
+    )
+
+    metrics.register_default(
+        metrics.counter(
+            'by_path_counter', 'Request count by request paths',
+            labels={'path': lambda: request.path}
+        )
+    )
+
 
     if config is not None:
         app.config.update(config)

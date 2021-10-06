@@ -1,6 +1,36 @@
 # Hello World
 
 
+### How to install
+
+You will need cmake installed.
+
+Clone this repository and cd into it
+```
+https://github.com/mateimicu/rev.git
+cd rev
+```
+
+To start it locally run
+```
+make run_local
+
+```
+
+Here is a full lost of make commands:
+
+| Command              | Description                                                                                                      |
+| -----------          | -----------                                                                                                      |
+| `make run_local`     | Create a virtual environment, install dependency and start the project locally                                   |
+| `make run_docker`    | Build a docker image with the project and start it                                                               |
+| `make type_checking` | Run the type checker for the project                                                                             |
+| `make test_local `   | Run the tests locally                                                                                            |
+| `make test_docker`   | Run the tests in the docker image (how they will be run in CI)                                                   |
+| `make build_docker`  | Build the docker image again (you can overwrite `IMAGE_NAME` and `IMAGE_TAG` if you want to change the defaults) |
+| `make helm_deploy`   | Will use the active KUBECONFIG context to deploy the application in the `rev-live` namespace                     |
+| `make clean`         | Will cleanup any local artifacts                                                                                 |
+
+
 ### Deployment
 
 As mentioned in [What is the execution environment ?](What_is_the_execution_environment_?) a Lambda would make more sense for this small app but going for Kubernetes we will need:
@@ -79,6 +109,30 @@ So will either have to use Redis Labs as a provider for this or we host our own 
 
 There is another option I was looking it but I don't have the time to implement a PoC for it:
 To use two separate products and abstract them at the code level. For example use [dynamodb](https://aws.amazon.com/dynamodb/) for AWS and [Cloud Firestore](https://firebase.google.com/docs/firestore) for GPC.
+
+#### What web server should I use ?
+
+Using the built-in development server for flask is not recommended and I went with unicorn that should be fast and secure.
+If we need complex features we can look at nginx but the most common things nginx provides can be configured at Ingress level.
+
+#### Local automation
+
+I decided to go with Make files for wrapping all the scripts and tooling because it is a common standard. Not widely used for python but in this scenario it does the job.
+
+#### How to expose metrics ?
+
+We have a few options:
+
+* Send them directly to CloudWatch
+* Integrate with another tool like DataDog
+* Use Prometheus format
+
+I decided to got with Prometheus for a few reasons:
+
+* We can use [Amazon Managed Service for Prometheus](https://aws.amazon.com/prometheus/) in AWS
+* DataDog can scrape Prometheus metrics
+* We can even install our own Prometheus in the cluster
+* The format is open and there are tools to export them to other systems
 
 ##### ToDo
 
